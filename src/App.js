@@ -5,11 +5,9 @@ import Navbar from './Navbar';
 import Card from './Card';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
-import loading from './loading.gif'
-
+import loading from './loading.gif';
 
 function App() {
-
   const songlist = [
     "tera mera pyar amar",
     "On my Way -Alan walker",
@@ -36,70 +34,69 @@ function App() {
     "Dil Diyan Gallan - Tiger Zinda Hai",
     "Nashe Si Chadh Gayi - Befikre",
     "Ae Dil Hai Mushkil - Ae Dil Hai Mushkil",
-    "Dekhona Dekhona -Anuv Jain",
-    "Husn -Anuv Jain",
-]
+    "Dekhona Dekhona - Anuv Jain",
+    "Husn - Anuv Jain",
+  ];
 
-  const randomSong=Math.floor(Math.random()*songlist.length)
-  
+  const randomSong = Math.floor(Math.random() * songlist.length);
 
-  const [tracks,setTracks]=useState([])
-  const [song,setsong]=useState(songlist[randomSong])
-  const [isLoading,setLoading]=useState(false)
-  
+  const [tracks, setTracks] = useState([]);
+  const [song, setSong] = useState(songlist[randomSong]);
+  const [isLoading, setLoading] = useState(false);
 
-  const options={
-    method: 'get',
-    url: `https://v1.nocodeapi.com/umarshaikh2482/spotify/FyetDbWXfXOkhcjx/search?q=${song}&type=track`
-  }
-  const getData=async()=>{
-    
-    if(song!=='')
-      {
-      setLoading(true)
-      const result=await axios.request(options)
-      if(result.status===429)
-      {
-
-        alert("Too many requests, Please try again later")
+  const getData = async () => {
+    if (song !== '') {
+      try {
+        setLoading(true);
+        const result = await axios.get(
+          `https://v1.nocodeapi.com/umarshaikh2482/spotify/FyetDbWXfXOkhcjx/search?q=${song}&type=track`
+        );
+        if (result.status === 200) {
+          setLoading(false);
+          const data = result.data;
+          setTracks(data.tracks.items || []); // Ensure we handle empty results gracefully
+        } else if (result.status === 429) {
+          alert('Too many requests, Please try again later');
+          setLoading(false);
+        }
+      } catch (error) {
+        setLoading(false);
+        console.error('Error fetching data:', error);
       }
-      else if(result.status===200)
-      {
+    } else {
+      alert('Please give Input...');
+    }
+  };
 
-        setLoading(false)
-        const data=await result.data
-        setTracks(data.tracks.items)
-      }
-      }
-      else
-      {
-        alert("Please give Input...")
-      }
-  }
-  useEffect(()=>{
-   getData()
-  },[])
-  const handleClick=async(e)=>{
-    e.preventDefault()
-    getData()
-    
-  }
+  useEffect(() => {
+    getData();
+  }, [song]); // Trigger fetch whenever `song` changes
+
+  const handleClick = async (e) => {
+    e.preventDefault();
+    getData();
+  };
+
   return (
     <div className="App">
-     <Navbar handleClick={handleClick} setsong={setsong}/>
-     <div className="container my-4">
-     <div className="row row-gap-5">
-    {isLoading && <div>
-      <img src={loading} alt='loader' width='400px'></img> </div>}
-   {
-   tracks && tracks.map((track)=>(
-<Card track={track} key={track.id}/>
-   ))
-   }
-
+      <Navbar handleClick={handleClick} setSong={setSong} />
+      <div className="container my-4">
+        <div className="row row-gap-5">
+          {isLoading && (
+            <div>
+              <img src={loading} alt="loader" width="400px" />
+            </div>
+          )}
+          {!isLoading && tracks.length === 0 && (
+            <div>No tracks found. Try searching for a different song.</div>
+          )}
+          {!isLoading &&
+            tracks.map((track) => (
+              <Card track={track} key={track.id} />
+            ))}
+        </div>
+      </div>
     </div>
-    </div>
-</div>
   );
 }
 
