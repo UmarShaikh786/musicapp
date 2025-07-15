@@ -39,9 +39,9 @@ function App() {
   ];
 
   const randomSong = Math.floor(Math.random() * songlist.length);
-
+  const randomSelectedSong=songlist[randomSong];
   const [tracks, setTracks] = useState([]);
-  const [song, setSong] = useState(songlist[randomSong]);
+  const [song, setSong] = useState(randomSelectedSong);
   const [isLoading, setLoading] = useState(false);
 
   const getData = async () => {
@@ -69,17 +69,20 @@ function App() {
   };
 
   useEffect(() => {
-    getData();
-  }, [song]); // Trigger fetch whenever `song` changes
+  const delayDebounce = setTimeout(() => {
+    if (song.trim() !== '') {
+      getData();
+    }
+  }, 500); // 500ms delay after user stops typing
 
-  const handleClick = async (e) => {
-    e.preventDefault();
-    getData();
-  };
+  return () => clearTimeout(delayDebounce); // Clear timeout if user types again
+}, [song]);
+  
+
 
   return (
     <div className="App">
-      <Navbar handleClick={handleClick} setSong={setSong} />
+      <Navbar  setSong={setSong} />
       <div className="container my-4">
         <div className="row row-gap-5">
           {isLoading && (

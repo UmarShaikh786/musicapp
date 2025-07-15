@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Navbar({ handleClick, setsong }) {
+function Navbar({ setSong }) {
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <div className="container-fluid">
@@ -9,9 +9,8 @@ function Navbar({ handleClick, setsong }) {
           <span className="navbar-toggler-icon"></span>
         </button>
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
-          <form className="d-flex w-100" role="search">
-            <input className="form-control me-2" onChange={(e) => setsong(e.target.value)} type="search" placeholder="Search Music Name" aria-label="Search" />
-            <button className="btn btn-outline-success" type="submit" onClick={handleClick}>Search</button>
+          <form className="d-flex w-100" role="search" onSubmit={(e) => e.preventDefault()}>
+            <input className="form-control me-2" onChange={(e) => setSong(e.target.value)} type="search" placeholder="Search Music Name" aria-label="Search" />
           </form>
         </div>
       </div>
